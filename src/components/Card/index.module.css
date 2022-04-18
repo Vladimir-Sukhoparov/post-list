@@ -22,12 +22,11 @@
 }
 
 .data{
-	margin-left: 0px;
-	padding-left: 0px;
-	align-items: flex-start;
-	
+	position: relative;
+    margin: 0;
+    padding-bottom: 20px;
+    font-size: 14px;
+    list-style: none;
+
 }
 
-.listItem {
-    padding:0px;
-}

@@ -20,6 +20,7 @@ import TimelineSeparator from '@mui/lab/TimelineSeparator'
 import TimelineConnector from '@mui/lab/TimelineConnector'
 import TimelineContent from '@mui/lab/TimelineContent'
 import TimelineDot from '@mui/lab/TimelineDot'
+import dayjs from 'dayjs'
 
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 
@@ -49,7 +50,7 @@ export const Card = ({ itemPost, isInFavorites, setFavorites }) => {
         localStorage.setItem(key, JSON.stringify(storage))
     }
 
-  /*   const removeLS = (key, value) => {
+    /*   const removeLS = (key, value) => {
         const storage = JSON.parse(localStorage.getItem(key))
         const filteredStorage = storage.filter((itemID) => value !== itemID)
         localStorage.setItem(key, JSON.stringify(filteredStorage))
@@ -112,32 +113,33 @@ export const Card = ({ itemPost, isInFavorites, setFavorites }) => {
                         {/*  <span> { itemFood.tags } </span> */}
                     </Typography>
                 </ListItem>
-                <ListItem className={style.listItem}>
-                    <Timeline className={style.data}>
-                        <TimelineItem>
+                {/* <ListItem > */}
+                    <Timeline>
+                        <TimelineItem  className={style.data}>
                             <TimelineSeparator>
                                 <TimelineDot variant='outlined' color='primary' />
                                 <TimelineConnector />
                             </TimelineSeparator>
                             <TimelineContent>
-                            <Typography gutterBottom variant='body2' component='div'>
-                       {itemPost.created_at}
-                    </Typography>
+                                <Typography gutterBottom variant='body2' component='div'>
+                                    {dayjs(itemPost.created_at).format('DD.MM.YYYY, HH:mm:ss')};
+                                </Typography>
                             </TimelineContent>
                         </TimelineItem>
 
-                        <TimelineItem>
+                        <TimelineItem >
                             <TimelineSeparator>
                                 <TimelineDot variant='outlined' color='success' />
                             </TimelineSeparator>
                             <TimelineContent>
-                            <Typography gutterBottom variant='body2' component='div'>
-                            {itemPost.updated_at}
-                    </Typography>
+                                <Typography gutterBottom variant='body2' component='div'>
+                                    Last edit<br/>
+                                    { dayjs(itemPost.updated_at).format('DD.MM.YYYY, HH:mm:ss')};
+                                </Typography>
                             </TimelineContent>
                         </TimelineItem>
                     </Timeline>
-                </ListItem>
+               {/*  </ListItem> */}
             </CardMUI>
         </ThemeProvider>
     )

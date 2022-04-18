@@ -3,6 +3,7 @@ import { Card } from '../Card';
 import './index.css';
 
 export const List = ({ list, favorites, setFavorites }) => {
+    
     return (
         <div className='cards'>
             {list?.map((item) => (

@@ -1,13 +1,13 @@
-import { config } from './config';
+import { config } from './config'
 
 const onResponce = (res) => {
-    return res.ok ? res.json() : Promise.reject(`Ошибка : ${res.status}`);
-};
+    return res.ok ? res.json() : Promise.reject(`Ошибка : ${res.status}`)
+}
 
 class Api {
     constructor({ url, token }) {
-        this._url = url;
-        this._token = token;
+        this._url = url
+        this._token = token
     }
 
     getPost() {
@@ -15,36 +15,29 @@ class Api {
             headers: {
                 authorization: `Bearer ${this._token}`,
             },
-        }).then(onResponce);
+        }).then(onResponce)
     }
 
-    
-
-    addLike(itemID) {
-        return fetch(`${this._url}/posts/likes/${itemID}`, {
+    addLike(postId) {
+        return fetch(`${this._url}/posts/likes/${postId}`, {
             method: 'PUT',
             headers: {
                 authorization: `Bearer ${this._token}`,
             },
-        }).then(onResponce);
+        }).then(onResponce)
     }
 
-    deleteLike(itemID) {
-        return fetch(`${this._url}/posts/likes/${itemID}`, {
+    deleteLike(postId) {
+        return fetch(`${this._url}/posts/likes/${postId}`, {
             method: 'DELETE',
             headers: {
                 authorization: `Bearer ${this._token}`,
             },
-        }).then(onResponce);
+        }).then(onResponce)
     }
 
-    /* getCurentUser() {
-        return fetch(`${this._url}/users/me`, {
-            headers: {
-                authorization: `Bearer ${this._token}`,
-            },
-        }).then(onResponce);
-    } */
+   
+   
 }
 
-export default new Api(config);
+export default new Api(config)
