@@ -18,8 +18,17 @@ class Api {
         }).then(onResponce)
     }
 
-    addLike(postId) {
-        return fetch(`${this._url}/posts/likes/${postId}`, {
+    showLikes() {
+        return fetch(`${this._url}/posts/likes`, {
+         
+            headers: {
+                authorization: `Bearer ${this._token}`,
+            },
+        }).then(onResponce)
+    }
+
+    /* addLike() {
+        return fetch(`${this._url}/posts/likes`, {
             method: 'PUT',
             headers: {
                 authorization: `Bearer ${this._token}`,
@@ -27,16 +36,22 @@ class Api {
         }).then(onResponce)
     }
 
-    deleteLike(postId) {
-        return fetch(`${this._url}/posts/likes/${postId}`, {
+    deleteLike() {
+        return fetch(`${this._url}/posts/likes`, {
             method: 'DELETE',
             headers: {
                 authorization: `Bearer ${this._token}`,
             },
         }).then(onResponce)
-    }
+    } */
 
-   
+   getInfoUser(){
+    return fetch(`${this._url}/users/me`, {
+        headers: {
+            authorization: `Bearer ${this._token}`,
+        },
+    }).then(onResponce)
+   }
    
 }
 

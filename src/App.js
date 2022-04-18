@@ -16,17 +16,22 @@ import { PostPage } from './components/PostPage'
 
 export const App = () => {
     const [postList, setPostList] = useState([])
-    
     const [currentPage, setCurrentPage] = useState(1)
     const [postsPerPage] = useState(12)
 
     const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem('favorites')) || [])
 
+    
+    const [user, setUser]=useState(null)
    
     useEffect(() => {
         api.getPost().then((list) => setPostList(list))
        
     }, [])
+
+    useEffect(()=>{
+        api.getInfoUser().then((user)=>setUser(user))
+    },[])
 
     const indexOfLastPosts = currentPage * postsPerPage
     const indexOfFirstPosts = indexOfLastPosts - postsPerPage
@@ -34,17 +39,21 @@ export const App = () => {
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber)
 
+    useEffect(()=>{
+        api.showLikes().then((likes)=>setFavorites(likes))
+    },[])
+
     return (
         <div className='appContainer'>
             <Header>
                 <Logo />
+                <Info name={user?.name}/>
                 <HeadLinks />
-                <Info favorites={favorites} />
             </Header>
             <Toolbar />
             <div className='content container'>
                 <div className='content__cards'>
-                    <List list={currentPosts} favorites={favorites} setFavorites={setFavorites} />
+                    <List list={currentPosts} favorites={favorites}/>
                 </div>
             </div>
             

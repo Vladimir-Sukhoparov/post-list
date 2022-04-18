@@ -1,10 +1,11 @@
 import React from 'react';
 
-export const Info = ({favorites}) => {
+export const Info = ({name}) => {
     return (
         <div>
-            <div> ЛАЙКИ {favorites.length} </div>
             
+            <div>{name} </div>
+          {/*   <div>Likes {favorites.length}</div> */}
            
         </div>
     );

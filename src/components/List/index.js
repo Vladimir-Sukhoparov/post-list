@@ -2,7 +2,7 @@ import React from 'react';
 import { Card } from '../Card';
 import './index.css';
 
-export const List = ({ list, favorites, setFavorites }) => {
+export const List = ({ list, favorites }) => {
     
     return (
         <div className='cards'>
@@ -10,12 +10,14 @@ export const List = ({ list, favorites, setFavorites }) => {
                 <Card
                     key={item._id}
                     itemPost={item}
+                   
                     
-                    isInFavorites={favorites.includes(item._id)}
                     
-                    setFavorites={setFavorites}
+                   favorites={favorites}
                 />
+                
             ))}
+            
         </div>
     );
 };

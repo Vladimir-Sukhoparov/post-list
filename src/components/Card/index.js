@@ -20,6 +20,10 @@ import TimelineSeparator from '@mui/lab/TimelineSeparator'
 import TimelineConnector from '@mui/lab/TimelineConnector'
 import TimelineContent from '@mui/lab/TimelineContent'
 import TimelineDot from '@mui/lab/TimelineDot'
+import IconButton from '@mui/material/IconButton'
+import FavoriteIcon from '@mui/icons-material/Favorite'
+import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined'
+
 import dayjs from 'dayjs'
 
 import { createTheme, ThemeProvider } from '@mui/material/styles'
@@ -43,28 +47,27 @@ const divStyle = {
     fontSize: '16px',
 }
 
-export const Card = ({ itemPost, isInFavorites, setFavorites }) => {
-    const writeLS = (key, value) => {
+export const Card = ({ itemPost, favorites }) => {
+   /*  const writeLS = (key, value) => {
         const storage = JSON.parse(localStorage.getItem(key)) || []
         storage.push(value)
         localStorage.setItem(key, JSON.stringify(storage))
     }
 
-    /*   const removeLS = (key, value) => {
+ const removeLS = (key, value) => {
         const storage = JSON.parse(localStorage.getItem(key))
         const filteredStorage = storage.filter((itemID) => value !== itemID)
         localStorage.setItem(key, JSON.stringify(filteredStorage))
-    }
-
-    const addFavorite = () => {
+    }  */
+    /*  const addFavorite = () => {
         writeLS('favorites', itemPost._id)
         setFavorites((prevState) => [...prevState, itemPost._id])
         api.addLike(itemPost._id)
             .then((addedItem) => {
-                alert(`${addedItem.name} добавлен в избраное`)
+                alert(`${addedItem.name} лайк поставлен`)
             })
             .catch(() => {
-                alert('Не удалось добавить')
+                alert('Не удалось поставить')
             })
     }
 
@@ -73,7 +76,7 @@ export const Card = ({ itemPost, isInFavorites, setFavorites }) => {
         setFavorites((prevState) => prevState.filter((itemID) => itemPost._id !== itemID))
         api.deleteLike(itemPost._id)
             .then((removedItem) => {
-                alert(`${removedItem.name} удален из избраного`)
+                alert(`${removedItem.name} лайк удален`)
             })
             .catch(() => {
                 alert('Не удалось удалить')
@@ -113,7 +116,7 @@ export const Card = ({ itemPost, isInFavorites, setFavorites }) => {
                         {/*  <span> { itemFood.tags } </span> */}
                     </Typography>
                 </ListItem>
-                {/* <ListItem > */}
+                <ListItem >
                     <Timeline>
                         <TimelineItem  className={style.data}>
                             <TimelineSeparator>
@@ -139,7 +142,17 @@ export const Card = ({ itemPost, isInFavorites, setFavorites }) => {
                             </TimelineContent>
                         </TimelineItem>
                     </Timeline>
-               {/*  </ListItem> */}
+                </ListItem>
+                
+                {favorites ? (
+                        <IconButton >
+                            <FavoriteIcon>{favorites.length}</FavoriteIcon>
+                        </IconButton>
+                    ) : (
+                        <IconButton  >
+                            <FavoriteBorderOutlinedIcon />
+                        </IconButton>
+                    )}
             </CardMUI>
         </ThemeProvider>
     )
