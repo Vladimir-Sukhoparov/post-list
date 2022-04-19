@@ -10,7 +10,7 @@ import { Logo } from './components/Logo'
 import { Toolbar } from './components/Toolbar'
 
 import './index.css'
-import { Pagination } from '@mui/material'
+
 import { PostPage } from './components/PostPage'
 
 
@@ -19,7 +19,7 @@ export const App = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [postsPerPage] = useState(12)
 
-    const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem('favorites')) || [])
+    //const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem('favorites')) || [])
 
     
     const [user, setUser]=useState(null)
@@ -39,9 +39,7 @@ export const App = () => {
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber)
 
-    useEffect(()=>{
-        api.showLikes().then((likes)=>setFavorites(likes))
-    },[])
+   
 
     return (
         <div className='appContainer'>
@@ -53,7 +51,7 @@ export const App = () => {
             <Toolbar />
             <div className='content container'>
                 <div className='content__cards'>
-                    <List list={currentPosts} favorites={favorites}/>
+                    <List list={currentPosts} />
                 </div>
             </div>
             

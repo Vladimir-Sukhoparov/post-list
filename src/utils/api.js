@@ -18,14 +18,7 @@ class Api {
         }).then(onResponce)
     }
 
-    showLikes() {
-        return fetch(`${this._url}/posts/likes`, {
-         
-            headers: {
-                authorization: `Bearer ${this._token}`,
-            },
-        }).then(onResponce)
-    }
+    
 
     /* addLike() {
         return fetch(`${this._url}/posts/likes`, {

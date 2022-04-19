@@ -27,20 +27,11 @@ import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent'
 
 import dayjs from 'dayjs'
 
-import { createTheme, ThemeProvider } from '@mui/material/styles'
+
 
 import style from './index.module.css'
 
-const theme = createTheme({
-    palette: {
-        primary: {
-            main: '#fed700;',
-        },
-        secondary: {
-            main: '#FF0000',
-        },
-    },
-})
+
 
 const divStyle = {
     padding: '13px',
@@ -49,7 +40,7 @@ const divStyle = {
 }
 
 
-export const Card = ({ itemPost, favorites }) => {
+export const Card = ({ itemPost}) => {
    /*  const writeLS = (key, value) => {
         const storage = JSON.parse(localStorage.getItem(key)) || []
         storage.push(value)
@@ -86,7 +77,7 @@ export const Card = ({ itemPost, favorites }) => {
     } */
 
     return (
-        <ThemeProvider theme={theme}>
+        
             <CardMUI sx={{ maxWidth: 345 }}>
                 <ListItem>
                     <Link style={divStyle} href='#' underline='hover' variant='body2'>
@@ -151,16 +142,17 @@ export const Card = ({ itemPost, favorites }) => {
                     </Timeline>
                 </ListItem>
                 
-                {favorites ? (
+              
                         <IconButton >
-                            <FavoriteIcon>{favorites.length}</FavoriteIcon>
+                            <FavoriteIcon/>
+                            <Typography gutterBottom variant='body2' component='div'>
+                            {itemPost.likes.length}
+                                </Typography>
+                            
                         </IconButton>
-                    ) : (
-                        <IconButton  >
-                            <FavoriteBorderOutlinedIcon />
-                        </IconButton>
-                    )}
+                   
+                    
             </CardMUI>
-        </ThemeProvider>
+        
     )
 }

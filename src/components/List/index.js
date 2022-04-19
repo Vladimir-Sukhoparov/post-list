@@ -2,7 +2,7 @@ import React from 'react';
 import { Card } from '../Card';
 import './index.css';
 
-export const List = ({ list, favorites }) => {
+export const List = ({ list }) => {
     
     return (
         <div className='cards'>
@@ -13,7 +13,7 @@ export const List = ({ list, favorites }) => {
                    
                     
                     
-                   favorites={favorites}
+                   
                 />
                 
             ))}
