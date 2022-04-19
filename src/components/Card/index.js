@@ -23,6 +23,7 @@ import TimelineDot from '@mui/lab/TimelineDot'
 import IconButton from '@mui/material/IconButton'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined'
+import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent'
 
 import dayjs from 'dayjs'
 
@@ -46,6 +47,7 @@ const divStyle = {
     color: '#1976d2',
     fontSize: '16px',
 }
+
 
 export const Card = ({ itemPost, favorites }) => {
    /*  const writeLS = (key, value) => {
@@ -118,7 +120,8 @@ export const Card = ({ itemPost, favorites }) => {
                 </ListItem>
                 <ListItem >
                     <Timeline>
-                        <TimelineItem  className={style.data}>
+                        <TimelineItem >
+                        <TimelineOppositeContent style={{ maxWidth: "1px", paddingLeft: '0px', paddingRight: '0px' }} />
                             <TimelineSeparator>
                                 <TimelineDot variant='outlined' color='primary' />
                                 <TimelineConnector />
@@ -128,18 +131,22 @@ export const Card = ({ itemPost, favorites }) => {
                                     {dayjs(itemPost.created_at).format('DD.MM.YYYY, HH:mm:ss')};
                                 </Typography>
                             </TimelineContent>
+                           
                         </TimelineItem>
 
                         <TimelineItem >
+                        <TimelineOppositeContent style={{ maxWidth: "1px", paddingLeft: '0px', paddingRight: '0px' }} />
+
                             <TimelineSeparator>
                                 <TimelineDot variant='outlined' color='success' />
                             </TimelineSeparator>
                             <TimelineContent>
                                 <Typography gutterBottom variant='body2' component='div'>
-                                    Last edit<br/>
-                                    { dayjs(itemPost.updated_at).format('DD.MM.YYYY, HH:mm:ss')};
+                                    Last edit{dayjs(itemPost.updated_at).format(' DD.MM.YYYY, HH:mm:ss')};
                                 </Typography>
                             </TimelineContent>
+                            
+
                         </TimelineItem>
                     </Timeline>
                 </ListItem>
