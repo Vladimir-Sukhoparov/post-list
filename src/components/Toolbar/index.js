@@ -6,11 +6,12 @@ import { emphasize, styled } from '@mui/material/styles'
 import Chip from '@mui/material/Chip'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
-
+import { useNavigate } from 'react-router-dom'
 import style from './index.module.css'
 
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
     const backgroundColor = theme.palette.mode === 'light' ? theme.palette.grey[100] : theme.palette.grey[800]
+    
     return {
         backgroundColor,
         height: theme.spacing(3),
@@ -29,7 +30,9 @@ const BootstrapButton = styled(Button)({
     textTransform: 'none',
 })
 
+
 export const Toolbar = () => {
+    const navigate=useNavigate()
     return (
         <div className={style.toolbar}>
             <Breadcrumbs aria-label='breadcrumb'>
@@ -50,7 +53,7 @@ export const Toolbar = () => {
                     <BootstrapButton
                         variant='outlined'
                         onClick={() => {
-                            console.log('Есть контакт!')
+                            navigate('/posts/create')
                         }}
                     >
                         Create post

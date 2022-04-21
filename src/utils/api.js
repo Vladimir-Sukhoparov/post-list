@@ -10,18 +10,17 @@ class Api {
         this._token = token
     }
 
-    getPost() {
-        return fetch(`${this._url}/posts`, {
+    getPost(itemID) {
+        const requestUrl=itemID ?`${this._url}/posts/${itemID}`:`${this._url}/posts`
+        return fetch(requestUrl, {
             headers: {
                 authorization: `Bearer ${this._token}`,
             },
         }).then(onResponce)
     }
 
-    
-
-    /* addLike() {
-        return fetch(`${this._url}/posts/likes`, {
+    addLike(itemID) {
+        return fetch(`${this._url}/posts/likes/${itemID}`, {
             method: 'PUT',
             headers: {
                 authorization: `Bearer ${this._token}`,
@@ -29,23 +28,44 @@ class Api {
         }).then(onResponce)
     }
 
-    deleteLike() {
-        return fetch(`${this._url}/posts/likes`, {
+    deleteLike(itemID) {
+        return fetch(`${this._url}/posts/likes/${itemID}`, {
             method: 'DELETE',
             headers: {
                 authorization: `Bearer ${this._token}`,
             },
         }).then(onResponce)
-    } */
+    }
 
-   getInfoUser(){
-    return fetch(`${this._url}/users/me`, {
-        headers: {
-            authorization: `Bearer ${this._token}`,
-        },
-    }).then(onResponce)
-   }
-   
+    getInfoUser() {
+        return fetch(`${this._url}/users/me`, {
+            headers: {
+                authorization: `Bearer ${this._token}`,
+            },
+        }).then(onResponce)
+    }
+
+    addPost(posts){
+        return fetch(`${this._url}/posts`, {
+            method: 'POST',
+            headers: {
+                authorization: `Bearer ${this._token}`,
+                'Content-Type':'application/json'
+            },
+            body: JSON.stringify(posts)
+        }).then(onResponce);
+    }
+
+    deletePost(itemID){
+        return fetch(`${this._url}/posts/${itemID}`, {
+            method: 'DELETE',
+            headers: {
+                authorization: `Bearer ${this._token}`,
+                            },
+            
+        }).then(onResponce);
+    }
+
 }
 
 export default new Api(config)
