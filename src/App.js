@@ -9,12 +9,12 @@ import { InfoUser } from './components/InfoUser'
 import { HeadLinks } from './components/HeadLinks'
 import { Logo } from './components/Logo'
 import { Toolbar } from './components/Toolbar'
-
-import './index.css'
-
+import "@fontsource/roboto"
 import { PostPage } from './components/PostPage'
 import { Post } from './components/Post'
-import { CreatePost } from './components/CreatePost'
+import { EditPost } from './components/EditPost'
+
+import './index.css'
 
 export const App = () => {
     const [postList, setPostList] = useState([])
@@ -35,6 +35,7 @@ export const App = () => {
             .then((user) => setUser(user))
             .catch((err) => alert(err))
     }, [])
+   
 
     const indexOfLastPosts = currentPage * postsPerPage
     const indexOfFirstPosts = indexOfLastPosts - postsPerPage
@@ -48,23 +49,28 @@ export const App = () => {
                 <InfoUser name={user?.name} />
                 <HeadLinks />
             </Header>
-            <Toolbar />
+            
             <div className='content container'>
                 <Routes>
+                
                     <Route
                         path='/'
-                        element={
+                        element={<div>
+                             <Toolbar />
+                           
                             <div className='content__cards'>
+                            
                                 <List list={currentPosts} favorites={favorites} setFavorites={setFavorites} />
 
                                 <PostPage postsPerPage={postsPerPage} totalPosts={postList.length} paginate={paginate} currentPage={currentPage} setCurrentPage={setCurrentPage} />
                             </div>
+                            </div>
                         }
                     />
 
-                    <Route path='posts/:itemID' element={<Post />} />
-                    <Route path='posts/create' element={<CreatePost />} />
-
+                    <Route path='posts/:itemID' element={<Post user={user?._id}/>} />
+                    {/* <Route path='posts/create' element={<CreatePost />} /> */}
+                    <Route path='posts/:itemID/edit' element={<EditPost />} />
                     <Route path='about' element={<div>Page About</div>} />
                 </Routes>
             </div>

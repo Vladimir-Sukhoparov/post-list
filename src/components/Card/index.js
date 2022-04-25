@@ -1,32 +1,20 @@
-import React, {useEffect, useState} from 'react'
-import {Link} from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import api from '../../utils/api'
 
 import { Card as CardMUI } from '@mui/material'
-
-import Typography from '@mui/material/Typography'
-
+import { Typography } from '@mui/material'
 import ListItem from '@mui/material/ListItem'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
-
-//import Link from '@mui/material/Link'
 import Avatar from '@mui/material/Avatar'
-
 import Divider from '@mui/material/Divider'
-import Button from '@mui/material/Button';
-import { red } from '@mui/material/colors';
-
-import Timeline from '@mui/lab/Timeline'
-import TimelineItem from '@mui/lab/TimelineItem'
-import TimelineSeparator from '@mui/lab/TimelineSeparator'
-import TimelineConnector from '@mui/lab/TimelineConnector'
-import TimelineContent from '@mui/lab/TimelineContent'
-import TimelineDot from '@mui/lab/TimelineDot'
+import { red } from '@mui/material/colors'
 import IconButton from '@mui/material/IconButton'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined'
-import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent'
+import ListItemText from '@mui/material/ListItemText'
+import CommentIcon from '@mui/icons-material/Comment'
 
 import dayjs from 'dayjs'
 
@@ -39,70 +27,70 @@ const divStyle = {
 }
 
 export const Card = ({ itemPost, isInFavorites, setFavorites }) => {
-    const [textLike, setTextLike]=useState(itemPost.likes.length)
-     
-    const writeLS = (key, value) => {
-        const storage = JSON.parse(localStorage.getItem(key)) || [];
-        storage.push(value);
+    const [textLike, setTextLike] = useState(itemPost.likes.length)
 
-        localStorage.setItem(key, JSON.stringify(storage));
-    };
+    const writeLS = (key, value) => {
+        const storage = JSON.parse(localStorage.getItem(key)) || []
+        storage.push(value)
+
+        localStorage.setItem(key, JSON.stringify(storage))
+    }
 
     const removeLS = (key, value) => {
-        const storage = JSON.parse(localStorage.getItem(key));
-        const filteredStorage = storage.filter((itemID) => value !== itemID);
-        localStorage.setItem(key, JSON.stringify(filteredStorage));
-    };
+        const storage = JSON.parse(localStorage.getItem(key))
+        const filteredStorage = storage.filter((itemID) => value !== itemID)
+        localStorage.setItem(key, JSON.stringify(filteredStorage))
+    }
 
     const addFavorite = () => {
-        writeLS('favorites', itemPost._id);
-        setFavorites((prevState) => [...prevState, itemPost._id]);
-        
+        writeLS('favorites', itemPost._id)
+        setFavorites((prevState) => [...prevState, itemPost._id])
+
         api.addLike(itemPost._id)
             .then((addedItem) => {
                 setTextLike(addedItem.likes.length)
             })
             .catch(() => {
-                alert('Не удалось поставить лайк');
-            });
-    };
+                alert('Не удалось поставить лайк')
+            })
+    }
 
     const removeFavorite = () => {
-        removeLS('favorites', itemPost._id);
-        setFavorites((prevState) => prevState.filter((itemID) => itemPost._id !== itemID));
+        removeLS('favorites', itemPost._id)
+        setFavorites((prevState) => prevState.filter((itemID) => itemPost._id !== itemID))
         api.deleteLike(itemPost._id)
             .then((removedItem) => {
                 setTextLike(removedItem.likes.length)
             })
             .catch(() => {
-                alert('Не удалось удалить лайк');
-            });
-    };
-
+                alert('Не удалось удалить лайк')
+            })
+    }
 
     return (
-        <CardMUI sx={{ maxWidth: 345 }}>
-            <ListItem>
-            <Link to={`posts/${itemPost._id}`}>{itemPost.title}</Link>
-
-
-                {/* <Link style={divStyle} href='#' underline='hover' variant='body2'>
-                    {itemPost.title}
-                </Link> */}
-            </ListItem>
-            <Divider />
+        <CardMUI sx={{ height: 650, width: 310, margin: 1 }}>
             <ListItem>
                 <ListItemAvatar>
                     <Avatar src={itemPost.author?.avatar} />
                 </ListItemAvatar>
-                <Typography gutterBottom variant='body2' component='div'>
-                    {itemPost.author?.email}
-                </Typography>
+                <ListItemText primary={<Typography variant='body1'>{itemPost.author?.name}</Typography>} secondary={<Typography variant='body2'>{itemPost.author?.about}</Typography>} />
+            </ListItem>
+            <Divider />
+            <ListItem>
+                <img
+                    style={{
+                        maxHeight: 300,
+                        maxWidth: 280,
+                    }}
+                    src={itemPost?.image}
+                    alt='picture'
+                />
             </ListItem>
             <ListItem>
-                <Typography gutterBottom variant='body2' component='div'>
-                    {itemPost.text}
-                </Typography>
+                <Link to={`posts/${itemPost._id}`}>{itemPost.title}</Link>
+            </ListItem>
+            <ListItem sx={{ alignItems: 'flex-start' }}>
+                <p className={style.p}> {itemPost.text}</p>
             </ListItem>
             <ListItem>
                 <Typography gutterBottom variant='body2' component='div'>
@@ -114,70 +102,33 @@ export const Card = ({ itemPost, isInFavorites, setFavorites }) => {
                     ))}
                 </Typography>
             </ListItem>
+
             <ListItem>
-                <Timeline>
-                    <TimelineItem>
-                        <TimelineOppositeContent style={{ maxWidth: '1px', paddingLeft: '0px', paddingRight: '0px' }} />
-                        <TimelineSeparator>
-                            <TimelineDot variant='outlined' color='primary' />
-                            <TimelineConnector />
-                        </TimelineSeparator>
-                        <TimelineContent>
-                            <Typography gutterBottom variant='body2' component='div'>
-                                {dayjs(itemPost.created_at).format('DD.MM.YYYY, HH:mm:ss')};
-                            </Typography>
-                        </TimelineContent>
-                    </TimelineItem>
+                {isInFavorites ? (
+                    <IconButton aria-label='add to favorites' onClick={removeFavorite}>
+                        <FavoriteIcon sx={{ color: red[500] }} />
+                        <Typography gutterBottom variant='body2' component='div'>
+                            {textLike}
+                        </Typography>
+                    </IconButton>
+                ) : (
+                    <IconButton aria-label='add to favorites' onClick={addFavorite}>
+                        <FavoriteBorderOutlinedIcon />
+                        <Typography gutterBottom variant='body2' component='div'>
+                            {textLike}
+                        </Typography>
+                    </IconButton>
+                )}
 
-                    <TimelineItem>
-                        <TimelineOppositeContent style={{ maxWidth: '1px', paddingLeft: '0px', paddingRight: '0px' }} />
+                {itemPost.comments.length > 0 && (
+                    <>
+                        <CommentIcon fontSize='small' sx={{ ml: 1 }} color='disabled' />
+                        <ListItemText secondary={itemPost.comments.length} />
+                    </>
+                )}
 
-                        <TimelineSeparator>
-                            <TimelineDot variant='outlined' color='success' />
-                        </TimelineSeparator>
-                        <TimelineContent>
-                            <Typography gutterBottom variant='body2' component='div'>
-                                Last edit{dayjs(itemPost.updated_at).format(' DD.MM.YYYY, HH:mm:ss')};
-                            </Typography>
-                        </TimelineContent>
-                    </TimelineItem>
-                </Timeline>
+                <ListItemText secondary={dayjs(itemPost.created_at).format('DD.MM.YYYY')} sx={{ ml: 1 }} />
             </ListItem>
-            <ListItem>
-            
-            {isInFavorites ? (
-                        <IconButton aria-label='add to favorites' onClick={removeFavorite}>
-                            <FavoriteIcon sx={{ color: red[500] }}  />
-                            <Typography gutterBottom variant='body2' component='div'>
-                    {textLike}
-                </Typography>
-                        </IconButton>
-                    ) : (
-                        <IconButton aria-label='add to favorites' onClick={addFavorite}>
-                            <FavoriteBorderOutlinedIcon />
-                            <Typography gutterBottom variant='body2' component='div'>
-                    {textLike}
-                </Typography>
-                        </IconButton>
-                    )}
-           {/*  {isInFavorites ? (
-                        <IconButton aria-label='add to favorites' onClick={removeFavorite}>
-                            <FavoriteIcon />
-                            <Typography gutterBottom variant='body2' component='div'>
-                    {itemPost.likes.length}
-                </Typography>
-                        </IconButton>
-                    ) : (
-                        <IconButton aria-label='add to favorites' onClick={addFavorite}>
-                            <FavoriteBorderOutlinedIcon />
-                            <Typography gutterBottom variant='body2' component='div'>
-                    {itemPost.likes.length}
-                </Typography>
-                        </IconButton>
-                    )} */}
-                
-                
-                    </ListItem>
         </CardMUI>
     )
 }

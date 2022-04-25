@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import Breadcrumbs from '@mui/material/Breadcrumbs'
 import HomeIcon from '@mui/icons-material/Home'
@@ -6,12 +6,18 @@ import { emphasize, styled } from '@mui/material/styles'
 import Chip from '@mui/material/Chip'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
-import { useNavigate } from 'react-router-dom'
 import style from './index.module.css'
+import api from '../../utils/api'
+import TextField from '@mui/material/TextField'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
 
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
     const backgroundColor = theme.palette.mode === 'light' ? theme.palette.grey[100] : theme.palette.grey[800]
-    
+
     return {
         backgroundColor,
         height: theme.spacing(3),
@@ -30,34 +36,73 @@ const BootstrapButton = styled(Button)({
     textTransform: 'none',
 })
 
-
 export const Toolbar = () => {
-    const navigate=useNavigate()
+    const [open, setOpen] = useState(false)
+
+    const handleClickOpen = () => {
+        setOpen(true)
+    }
+
+    const handleClose = () => {
+        setOpen(false)
+    }
+
+    const handleSubmit = (event) => {
+        event.preventDefault()
+        const {
+            target: { inputImage, inputTitle, inputText, inputTags },
+        } = event
+        api.addPost({
+            image: inputImage.value,
+            title: inputTitle.value,
+            text: inputText.value,
+            tags: [inputTags.value],
+        })
+            .then((data) => {
+                {
+                    handleClose
+                }
+            })
+            .catch((err) => alert(err))
+    }
     return (
         <div className={style.toolbar}>
             <Breadcrumbs aria-label='breadcrumb'>
-                <StyledBreadcrumb component='a' href='#' label='Home' icon={<HomeIcon fontSize='small' />} />
-                <StyledBreadcrumb component='a' href='#' label='All posts' />
+                <StyledBreadcrumb component='a' href='#' label='Главная' icon={<HomeIcon fontSize='small' />} />
+                <StyledBreadcrumb component='a' href='#' label='Все посты' />
             </Breadcrumbs>
             <div className={style.createPost}>
                 <div>
                     <Typography gutterBottom variant='h6' component='div'>
-                        Welcome to Our Image Board!
+                        Добро пожаловать на мою страничку
                     </Typography>
                     <br />
                     <Typography gutterBottom variant='body2' component='div'>
-                        We're stoked that you're here. 🥳
+                        Мы рады, что вы здесь. 🥳
                     </Typography>
                 </div>
                 <div>
-                    <BootstrapButton
-                        variant='outlined'
-                        onClick={() => {
-                            navigate('/posts/create')
-                        }}
-                    >
-                        Create post
+                    <BootstrapButton onClick={handleClickOpen} variant='contained' disableRipple>
+                        Создать пост
                     </BootstrapButton>
+                    <Dialog open={open} onClose={handleClose}>
+                        <form onSubmit={handleSubmit}>
+                            <DialogTitle>Создание поста</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText>Заполните все поля</DialogContentText>
+                                <TextField margin='dense' name='inputImage' label='URL картинки' fullWidth variant='standard' />
+                                <TextField margin='dense' name='inputTitle' label='Название' fullWidth variant='standard' />
+                                <TextField margin='dense' name='inputText' label='Описание' fullWidth variant='standard' />
+                                <TextField margin='dense' name='inputTags' label='Тэги' fullWidth variant='standard' />
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleClose}>Отмена</Button>
+                                <Button type='submit' onClick={handleClose}>
+                                    Создать пост
+                                </Button>
+                            </DialogActions>
+                        </form>
+                    </Dialog>
                 </div>
             </div>
         </div>

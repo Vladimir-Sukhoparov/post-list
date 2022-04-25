@@ -10,7 +10,8 @@
 
 .tags{
 	box-sizing: border-box;
-    color: rgba(0, 0, 0, 0.85);
+    background-color: rgb(92, 199, 92);
+    color: rgba(255, 255, 255, 0.85);
     font-size: 14px;
     display: inline-block;
     margin-right: 5px;
@@ -21,5 +22,14 @@
   
 }
 
-
+.p{
+    display: block;
+    display: -webkit-box;
+  max-width: 300px;
+  max-height: 300;
+  -webkit-line-clamp: 4; /* количество строк */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 

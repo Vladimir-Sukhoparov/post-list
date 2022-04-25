@@ -11,7 +11,7 @@ class Api {
     }
 
     getPost(itemID) {
-        const requestUrl=itemID ?`${this._url}/posts/${itemID}`:`${this._url}/posts`
+        const requestUrl = itemID ? `${this._url}/posts/${itemID}` : `${this._url}/posts`
         return fetch(requestUrl, {
             headers: {
                 authorization: `Bearer ${this._token}`,
@@ -45,27 +45,36 @@ class Api {
         }).then(onResponce)
     }
 
-    addPost(posts){
+    addPost(posts) {
         return fetch(`${this._url}/posts`, {
             method: 'POST',
             headers: {
                 authorization: `Bearer ${this._token}`,
-                'Content-Type':'application/json'
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(posts)
-        }).then(onResponce);
+            body: JSON.stringify(posts),
+        }).then(onResponce)
     }
 
-    deletePost(itemID){
+    editPost(itemID, editItem) {
+        return fetch(`${this._url}/posts/${itemID}`, {
+            method: 'PATCH',
+            headers: {
+                authorization: `Bearer ${this._token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(editItem),
+        }).then(onResponce)
+    }
+
+    deletePost(itemID) {
         return fetch(`${this._url}/posts/${itemID}`, {
             method: 'DELETE',
             headers: {
                 authorization: `Bearer ${this._token}`,
-                            },
-            
-        }).then(onResponce);
+            },
+        }).then(onResponce)
     }
-
 }
 
 export default new Api(config)
