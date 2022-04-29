@@ -1,9 +1,91 @@
-import React from 'react'
+import React, { useContext, useEffect, useState } from 'react'
+import UserContext from '../../contexts/userContext'
+import api from '../../utils/api'
+import ModalContext from '../../contexts/modalContext'
 
-export const InfoUser = ({ name }) => {
+import Avatar from '@mui/material/Avatar'
+import Chip from '@mui/material/Chip'
+import Stack from '@mui/material/Stack'
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
+import TextField from '@mui/material/TextField'
+
+export const InfoUser = () => {
+    const { user, setUser } = useContext(UserContext)
+    const {setModalState} = useContext(ModalContext)
+    const [userName, setUserName] = useState('')
+    const [userAbout, setUserAbout] = useState('')
+    const [userAvatar, setUserAvatar] = useState('')
+
+    useEffect(()=>{
+        user && setUserName(user.name),
+        user && setUserAbout(user.about),
+        user && setUserAvatar(user.avatar)
+    },[user])
+
+    const [open, setOpen] = useState(false)
+
+    const handleClickOpen = () => {
+        setOpen(true)
+    }
+
+    const handleClose = () => {
+        setOpen(false)
+    }
+
+    const handleClick =()=>{
+        api.editCurentUser({name:userName,
+            about:userAbout
+        }).then((data)=>{
+            setUser(data);
+          
+        })
+        .catch(()=>
+        setModalState(()=>{
+            return {
+                isOpen: true,
+                msg: 'Не удалось редактировать информацию о пользователе'
+            }
+        }));
+        api.editAvatarUser({avatar:userAvatar})
+        .then((data)=>{
+           setUser(data)
+        })
+        .catch(()=>
+        setModalState(()=>{
+            return {
+                isOpen: true,
+                msg: 'Не удалось обновить аватар'
+            }
+        }) );
+        handleClose();
+    }
+
     return (
         <div>
-            <div>{name} </div>
+            <Stack direction='row' spacing={1}>
+                <Chip avatar={<Avatar alt='picture' src={user?.avatar} />} label={user?.name} variant='outlined' onClick={handleClickOpen}/>
+
+                <Dialog open={open} onClose={handleClose}>
+                    <DialogTitle>Редактировать данные пользователя</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>Заполните все поля</DialogContentText>
+                        <TextField margin='dense' name='inputAvatar' label='URL картинки' fullWidth variant='standard' value={userAvatar} onChange={({target})=>{setUserAvatar(target.value)}}/>
+                        <TextField margin='dense' name='inputName' label='Имя' fullWidth variant='standard' value={userName} onChange={({target})=>{setUserName(target.value)}}/>
+                        <TextField margin='dense' name='inputAbout' label='Дополнительная информация' fullWidth variant='standard' value={userAbout} onChange={({target})=>{setUserAbout(target.value)}}/>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Отмена</Button>
+                        <Button  onClick={handleClick}>
+                            Сохранить
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </Stack>
         </div>
     )
 }

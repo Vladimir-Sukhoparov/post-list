@@ -1,5 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { Link } from 'react-router-dom'
+
+import ModalContext from '../../contexts/modalContext'
 
 import api from '../../utils/api'
 
@@ -28,6 +30,7 @@ const divStyle = {
 
 export const Card = ({ itemPost, isInFavorites, setFavorites }) => {
     const [textLike, setTextLike] = useState(itemPost.likes.length)
+    const {setModalState} = useContext(ModalContext)
 
     const writeLS = (key, value) => {
         const storage = JSON.parse(localStorage.getItem(key)) || []
@@ -51,7 +54,12 @@ export const Card = ({ itemPost, isInFavorites, setFavorites }) => {
                 setTextLike(addedItem.likes.length)
             })
             .catch(() => {
-                alert('Не удалось поставить лайк')
+                setModalState(() => {
+                    return {
+                        isOpen: true,
+                        msg: 'Не удалось поставить лайк',
+                    }
+                })
             })
     }
 
@@ -63,72 +71,85 @@ export const Card = ({ itemPost, isInFavorites, setFavorites }) => {
                 setTextLike(removedItem.likes.length)
             })
             .catch(() => {
-                alert('Не удалось удалить лайк')
+                setModalState(() => {
+                    return {
+                        isOpen: true,
+                        msg: 'Не удалось удалить лайк'
+                    }
+                })
             })
     }
 
     return (
-        <CardMUI sx={{ height: 650, width: 310, margin: 1 }}>
-            <ListItem>
-                <ListItemAvatar>
-                    <Avatar src={itemPost.author?.avatar} />
-                </ListItemAvatar>
-                <ListItemText primary={<Typography variant='body1'>{itemPost.author?.name}</Typography>} secondary={<Typography variant='body2'>{itemPost.author?.about}</Typography>} />
-            </ListItem>
-            <Divider />
-            <ListItem>
-                <img
-                    style={{
-                        maxHeight: 300,
-                        maxWidth: 280,
-                    }}
-                    src={itemPost?.image}
-                    alt='picture'
-                />
-            </ListItem>
-            <ListItem>
-                <Link to={`posts/${itemPost._id}`}>{itemPost.title}</Link>
-            </ListItem>
-            <ListItem sx={{ alignItems: 'flex-start' }}>
-                <p className={style.p}> {itemPost.text}</p>
-            </ListItem>
-            <ListItem>
-                <Typography gutterBottom variant='body2' component='div'>
-                    Tags:
-                    {itemPost.tags.map((item, i) => (
-                        <span key={i} className={style.tags}>
-                            {item}
-                        </span>
-                    ))}
-                </Typography>
-            </ListItem>
+        <CardMUI sx={{ width: 310, margin: 1 }}>
+            <div className={style.card}>
+                <div>
+                    <div>
+                        <ListItem>
+                            <ListItemAvatar>
+                                <Avatar src={itemPost.author?.avatar} />
+                            </ListItemAvatar>
+                            <ListItemText primary={<Typography variant='body1'>{itemPost.author?.name}</Typography>} secondary={<Typography variant='body2'>{itemPost.author?.about}</Typography>} />
+                        </ListItem>
+                        <Divider />
+                    </div>
 
-            <ListItem>
-                {isInFavorites ? (
-                    <IconButton aria-label='add to favorites' onClick={removeFavorite}>
-                        <FavoriteIcon sx={{ color: red[500] }} />
-                        <Typography gutterBottom variant='body2' component='div'>
-                            {textLike}
-                        </Typography>
-                    </IconButton>
-                ) : (
-                    <IconButton aria-label='add to favorites' onClick={addFavorite}>
-                        <FavoriteBorderOutlinedIcon />
-                        <Typography gutterBottom variant='body2' component='div'>
-                            {textLike}
-                        </Typography>
-                    </IconButton>
-                )}
+                    <img src={itemPost?.image} alt='picture' />
 
-                {itemPost.comments.length > 0 && (
-                    <>
-                        <CommentIcon fontSize='small' sx={{ ml: 1 }} color='disabled' />
-                        <ListItemText secondary={itemPost.comments.length} />
-                    </>
-                )}
+                    <div className={style.body}>
+                        <ListItem>
+                            <Link to={`posts/${itemPost._id}`}>{itemPost.title}</Link>
+                        </ListItem>
+                    </div>
 
-                <ListItemText secondary={dayjs(itemPost.created_at).format('DD.MM.YYYY')} sx={{ ml: 1 }} />
-            </ListItem>
+                    <div>
+                        <ListItem sx={{ alignItems: 'flex-start' }}>
+                            <p className={style.p}> {itemPost.text}</p>
+                        </ListItem>
+                    </div>
+
+                    <div>
+                        <ListItem>
+                            <Typography gutterBottom variant='body2' component='div'>
+                                Tags:
+                                {itemPost.tags.map((item, i) => (
+                                    <span key={i} className={style.tags}>
+                                        {item}
+                                    </span>
+                                ))}
+                            </Typography>
+                        </ListItem>
+                    </div>
+                </div>
+                <div className={style.footer}>
+                    <ListItem>
+                        <ListItemText secondary={dayjs(itemPost.created_at).format('DD.MM.YYYY')} sx={{ ml: 1 }} />
+
+                        {itemPost.comments.length > 0 && (
+                            <>
+                                <CommentIcon fontSize='small' sx={{ ml: 1 }} color='disabled' />
+                                <ListItemText secondary={itemPost.comments.length} />
+                            </>
+                        )}
+
+                        {isInFavorites ? (
+                            <IconButton aria-label='add to favorites' onClick={removeFavorite}>
+                                <FavoriteIcon sx={{ color: red[500] }} />
+                                <Typography gutterBottom variant='body2' component='div'>
+                                    {textLike}
+                                </Typography>
+                            </IconButton>
+                        ) : (
+                            <IconButton aria-label='add to favorites' onClick={addFavorite}>
+                                <FavoriteBorderOutlinedIcon />
+                                <Typography gutterBottom variant='body2' component='div'>
+                                    {textLike}
+                                </Typography>
+                            </IconButton>
+                        )}
+                    </ListItem>
+                </div>
+            </div>
         </CardMUI>
     )
 }

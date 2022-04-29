@@ -9,18 +9,25 @@ import { InfoUser } from './components/InfoUser'
 import { HeadLinks } from './components/HeadLinks'
 import { Logo } from './components/Logo'
 import { Toolbar } from './components/Toolbar'
-import "@fontsource/roboto"
+import '@fontsource/roboto'
 import { PostPage } from './components/PostPage'
 import { Post } from './components/Post'
-import { EditPost } from './components/EditPost'
+
+import UserContext from './contexts/userContext'
+import ModalContext from './contexts/modalContext'
 
 import './index.css'
+import AlertModal from './components/Modal'
 
 export const App = () => {
     const [postList, setPostList] = useState([])
     const [currentPage, setCurrentPage] = useState(1)
     const [postsPerPage] = useState(12)
     const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem('favorites')) || [])
+    const [modalState, setModalState] = useState({
+        isOpen: false,
+        msg: null
+    })
 
     const [user, setUser] = useState(null)
 
@@ -35,7 +42,6 @@ export const App = () => {
             .then((user) => setUser(user))
             .catch((err) => alert(err))
     }, [])
-   
 
     const indexOfLastPosts = currentPage * postsPerPage
     const indexOfFirstPosts = indexOfLastPosts - postsPerPage
@@ -43,39 +49,42 @@ export const App = () => {
     const paginate = (pageNumber) => setCurrentPage(pageNumber)
 
     return (
-        <div className='appContainer'>
-            <Header>
-                <Logo />
-                <InfoUser name={user?.name} />
-                <HeadLinks />
-            </Header>
-            
-            <div className='content container'>
-                <Routes>
-                
-                    <Route
-                        path='/'
-                        element={<div>
-                             <Toolbar />
-                           
-                            <div className='content__cards'>
+        <UserContext.Provider value={{ user, setUser }}>
+            <ModalContext.Provider value={{ modalState, setModalState }}>
+                <div className='appContainer'>
+                <AlertModal />
+                    <Header>
+                        <Logo />
+                        <InfoUser />
+                        <HeadLinks />
+                    </Header>
+                    <div className='content container'>
+                        <Routes>
+                            <Route
+                                path='/'
+                                element={
+                                    <div>
+                                        <Toolbar changeList={setPostList} />
+
+                                        <div className='content__cards'>
+                                            <List list={currentPosts} favorites={favorites} setFavorites={setFavorites} />
+
+                                            <PostPage postsPerPage={postsPerPage} totalPosts={postList.length} paginate={paginate} currentPage={currentPage} setCurrentPage={setCurrentPage} />
+                                        </div>
+                                    </div>
+                                }
+                            />
+
+                            <Route path='posts/:itemID' element={<Post user={user?._id} changeList={setPostList} />} />
+
                             
-                                <List list={currentPosts} favorites={favorites} setFavorites={setFavorites} />
+                            <Route path='about' element={<div>Page About</div>} />
+                        </Routes>
+                    </div>
 
-                                <PostPage postsPerPage={postsPerPage} totalPosts={postList.length} paginate={paginate} currentPage={currentPage} setCurrentPage={setCurrentPage} />
-                            </div>
-                            </div>
-                        }
-                    />
-
-                    <Route path='posts/:itemID' element={<Post user={user?._id}/>} />
-                    {/* <Route path='posts/create' element={<CreatePost />} /> */}
-                    <Route path='posts/:itemID/edit' element={<EditPost />} />
-                    <Route path='about' element={<div>Page About</div>} />
-                </Routes>
-            </div>
-
-            <Footer />
-        </div>
+                    <Footer />
+                </div>
+            </ModalContext.Provider>
+        </UserContext.Provider>
     )
 }

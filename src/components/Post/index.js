@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import React, { useState, useEffect, useContext } from 'react'
+import { useParams, Link } from 'react-router-dom'
 import api from '../../utils/api'
+import ModalContext from '../../contexts/modalContext'
 
 import Grid from '@mui/material/Grid'
 import { Button, Divider, List, Typography } from '@mui/material'
@@ -13,50 +14,167 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogTitle from '@mui/material/DialogTitle'
+import TextField from '@mui/material/TextField'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import SendIcon from '@mui/icons-material/Send';
+
 
 import dayjs from 'dayjs'
 
 import style from './index.module.css'
 
-export const Post = (user) => {
+export const Post = ({user}, { changeList }) => {
+    const {setModalState}= useContext (ModalContext)
     const [item, setItem] = useState(null)
     const params = useParams()
-    const navigate = useNavigate()
+    const [comments, setComments] = useState()
+    const [commentID, setCommentID]=useState()
+  
+          
+    const [image, setImage] = useState('')
+    const [title, setTitle] = useState('')
+    const [text, setText] = useState('')
+    const [tags, setTags] = useState('')
 
     const handleClick = () => {
         api.deletePost(params.itemID)
             .then((data) => {
-                console.log(data)
-                navigate('/')
+                changeList((prevState) => {
+                    return prevState.filter((item) => item._id !== params.itemID)
+                })
+                {
+                    handleClose
+                }
             })
-            .catch((err) => console.log(err))
+            .catch(() => 
+            setModalState(()=>{
+                return {
+                    isOpen: true,
+                    msg: 'Не удалось удалить пост'
+                }
+            }))
     }
 
-    const navigateToEditPage = () => {
-        navigate(`edit`)
+    
+  
+
+    const handleClickDelCom=()=>{
+       
+        api.deleteComments(params.itemID, commentID)
+        .then((data)=>
+        handleCloseComment())
+        .catch(() => 
+        setModalState(()=>{
+            return {
+                isOpen: true,
+                msg: 'Не удалось удалить комментарий'
+            }
+        }))
+    
+    }
+
+    const addUserComments = (event) => {
+        event.preventDefault()
+        const {
+            target: { inputComments },
+        } = event
+       
+        api.addComments(params.itemID,{
+            text: inputComments.value.trim()
+        })
+        .then((data)=>{
+         inputComments.value=''
+        })
+        .catch(()=>
+        setModalState(()=>{
+            return {
+                isOpen: true,
+                msg: 'Не удалось добавить комментарий'
+            }
+        }))
     }
 
     useEffect(() => {
         api.getPost(params.itemID)
             .then((data) => setItem(data))
-            .catch((err) => alert(err))
+            .catch(() => 
+            setModalState(()=>{
+                return {
+                    isOpen: true,
+                    msg: 'Не удалось открыть пост'
+                }
+            }))
     }, [])
 
-    const [open, setOpen] = React.useState(false)
+    const [open, setOpen] = useState(false)
+    const [openEdit, setOpenEdit] = useState(false)
+    const [openComment, setOpenComment]=useState(false)
 
     const handleClickOpen = () => {
         setOpen(true)
     }
-
+    
     const handleClose = () => {
         setOpen(false)
     }
 
+    const handleClickOpenEdit = () => {
+        setOpenEdit(true)
+    }
+
+    const handleCloseEdit = () => {
+        setOpenEdit(false)
+    }
+
+    const handleClickOpenComment = () => {
+        setOpenComment(true)
+    }
+
+    const handleCloseComment = () => {
+        setOpenComment(false)
+    }
+    
+    const handleClickToEdit = () => {
+        api.editPost(params.itemID, {
+            image: image,
+            title: title,
+            text: text,
+            tags: tags,
+        })
+            .then((data) => {
+                setItem(data)
+                handleCloseEdit()
+            })
+            .catch(() => 
+            setModalState(()=>{
+                return {
+                    isOpen: true,
+                    msg: 'Не удалось редактировать пост'
+                }
+            }))
+    }
+
+    useEffect(() => {
+        item && setImage(item.image), item && setTitle(item.title), item && setText(item.text), item && setTags(item.tags)
+    }, [item])
+
+    useEffect(() => {
+        api.getCommentPost(params.itemID)
+        .then((data) => setComments(data))
+        .catch((err) => alert(err))
+    }, [])
+    
+    
+    
+
     return (
         <div>
-            <Button href='/' variant='outlined' sx={{ mb: 1 }}>
+        <Link to='/'>
+            <Button variant='outlined' sx={{ mb: 1 }}>
                 Назад
             </Button>
+            </Link>
             <>
                 {item && (
                     <Grid container spacing={2}>
@@ -79,15 +197,75 @@ export const Post = (user) => {
                                     <ListItemText primary={<Typography variant='body1'>{item.author?.name}</Typography>} secondary={dayjs(item.created_at).format('DD.MM.YYYY')} />
                                 </ListItem>
                                 <ListItem>
-                                    {item.author._id == user.user && <EditIcon onClick={navigateToEditPage} sx={{ ml: 1, mr: 1 }} />}
-                                    {item.author._id == user.user && <DeleteIcon fontSize='small' onClick={handleClickOpen} sx={{ ml: 1, mr: 1 }} />}
+                                    {item.author._id == user && <EditIcon onClick={handleClickOpenEdit} sx={{ ml: 1, mr: 1, cursor: 'pointer' }} />}
+
+                                    <Dialog open={openEdit} onClose={handleClose}>
+                                        <DialogTitle>Редактирование поста</DialogTitle>
+                                        <DialogContent>
+                                            <DialogContentText>Заполните все поля</DialogContentText>
+                                            <TextField
+                                                margin='dense'
+                                                name='inputImage'
+                                                label='URL картинки'
+                                                fullWidth
+                                                variant='standard'
+                                                value={image}
+                                                onChange={({ target }) => {
+                                                    setImage(target.value)
+                                                }}
+                                            />
+                                            <TextField
+                                                margin='dense'
+                                                name='inputTitle'
+                                                label='Название'
+                                                fullWidth
+                                                variant='standard'
+                                                value={title}
+                                                onChange={({ target }) => {
+                                                    setTitle(target.value)
+                                                }}
+                                            />
+                                            <TextField
+                                                margin='dense'
+                                                name='inputText'
+                                                label='Описание'
+                                                fullWidth
+                                                variant='standard'
+                                                value={text}
+                                                onChange={({ target }) => {
+                                                    setText(target.value)
+                                                }}
+                                            />
+                                            <TextField
+                                                margin='dense'
+                                                name='inputTags'
+                                                label='Укажите тэги через запятую'
+                                                fullWidth
+                                                variant='standard'
+                                                value={tags}
+                                                onChange={({ target }) => {
+                                                    setTags(target.value)
+                                                }}
+                                            />
+                                        </DialogContent>
+                                        <DialogActions>
+                                            <Button onClick={handleCloseEdit}>Отмена</Button>
+                                            <Button onClick={handleClickToEdit}>Сохранить</Button>
+                                        </DialogActions>
+                                    </Dialog>
+
+                                    {item.author._id == user && <DeleteIcon fontSize='small' onClick={handleClickOpen} sx={{ ml: 1, mr: 1, cursor: 'pointer' }} />}
 
                                     <Dialog open={open} onClose={handleClose} aria-labelledby='alert-dialog-title' aria-describedby='alert-dialog-description'>
                                         <DialogTitle id='alert-dialog-title'>Вы действительно хотите удалить свой пост? </DialogTitle>
 
                                         <DialogActions>
                                             <Button onClick={handleClose}>Отмена</Button>
-                                            <Button onClick={handleClick}>Удалить</Button>
+                                           
+                                            <Button onClick={handleClick} href='/'>
+                                                Удалить
+                                            </Button>
+                                            
                                         </DialogActions>
                                     </Dialog>
 
@@ -105,19 +283,46 @@ export const Post = (user) => {
                                 <ListItem>
                                     <Typography variant='body1'>{item.text}</Typography>
                                 </ListItem>
+                                <Divider />
+                                <form onSubmit={addUserComments}>
+                                <TextField id='outlined-basic' label='Ваш комментарий' variant='outlined' fullWidth name='inputComments' />
+                                <Button type='submit' variant='outlined'  sx={{ mt: 1, mb:1}} size="small" endIcon={<SendIcon /> } >
+                                    Добавить комментарий
+                                </Button>
+                                </form>
+                                <Divider />
                             </Grid>
 
                             <Grid item xs={12}>
-                                {item.comments.map((item, i) => (
+                                {comments?.map((item, i) => (
                                     <List key={i}>
                                         <ListItem>
                                             <ListItemAvatar>
                                                 <Avatar src={item.author?.avatar} />
                                             </ListItemAvatar>
-                                            <ListItemText primary={<Typography variant='body1'>{item.author}</Typography>} secondary={dayjs(item.created_at).format('DD.MM.YYYY')} />
+                                            <ListItemText primary={<Typography variant='body1'>{item.author?.name}</Typography>} secondary={dayjs(item.created_at).format('DD.MM.YYYY')} />
                                         </ListItem>
 
                                         <Typography variant='body1'>{item.text}</Typography>
+                                        {item.author._id == user && <DeleteIcon fontSize='small' 
+                                        onClick={() => {
+                                                     setCommentID(item._id);
+                                                    handleClickOpenComment()
+                                                    
+                                                }}
+                                         sx={{ ml: 48, cursor: 'pointer' }} />}
+                                        <Dialog open={openComment} onClose={handleCloseComment} aria-labelledby='alert-dialog-title' aria-describedby='alert-dialog-description'>
+                                        <DialogTitle id='alert-dialog-title'>Вы действительно хотите удалить свой комментарий? </DialogTitle>
+
+                                        <DialogActions>
+                                            <Button onClick={handleCloseComment}>Отмена</Button>
+                                           
+                                            <Button onClick={handleClickDelCom}>
+                                                Удалить
+                                            </Button>
+                                            
+                                        </DialogActions>
+                                    </Dialog>
                                         <Divider />
                                     </List>
                                 ))}

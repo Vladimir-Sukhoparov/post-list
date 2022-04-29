@@ -1,14 +1,16 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
+
+import ModalContext from '../../contexts/modalContext'
 
 import Breadcrumbs from '@mui/material/Breadcrumbs'
 import HomeIcon from '@mui/icons-material/Home'
 import { emphasize, styled } from '@mui/material/styles'
 import Chip from '@mui/material/Chip'
 import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
 import style from './index.module.css'
 import api from '../../utils/api'
 import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -36,7 +38,8 @@ const BootstrapButton = styled(Button)({
     textTransform: 'none',
 })
 
-export const Toolbar = () => {
+export const Toolbar = ({changeList}) => {
+    const {setModalState} = useContext(ModalContext)
     const [open, setOpen] = useState(false)
 
     const handleClickOpen = () => {
@@ -52,19 +55,32 @@ export const Toolbar = () => {
         const {
             target: { inputImage, inputTitle, inputText, inputTags },
         } = event
+        if(inputImage.value.length!==0 && inputTitle.value.length!==0 && inputText.value.length!==0 && inputTags.value.length!==0){
         api.addPost({
-            image: inputImage.value,
-            title: inputTitle.value,
-            text: inputText.value,
-            tags: [inputTags.value],
+            image: inputImage.value.trim(),
+            title: inputTitle.value.trim(),
+            text: inputText.value.trim(),
+            tags: inputTags.value.trim().split(','),
         })
             .then((data) => {
+                changeList((prevState)=>[...prevState, data])
                 {
                     handleClose
                 }
             })
-            .catch((err) => alert(err))
-    }
+            .catch(() => 
+            setModalState(()=>{
+                return {
+                    isOpen: true,
+                    msg: 'Не удалось добавить пост'
+                }
+            }))
+    } else {setModalState(()=>{
+        return {
+            isOpen: true,
+            msg: 'Заполните все поля'
+        }
+    }); handleClickOpen()}}
     return (
         <div className={style.toolbar}>
             <Breadcrumbs aria-label='breadcrumb'>
@@ -93,7 +109,7 @@ export const Toolbar = () => {
                                 <TextField margin='dense' name='inputImage' label='URL картинки' fullWidth variant='standard' />
                                 <TextField margin='dense' name='inputTitle' label='Название' fullWidth variant='standard' />
                                 <TextField margin='dense' name='inputText' label='Описание' fullWidth variant='standard' />
-                                <TextField margin='dense' name='inputTags' label='Тэги' fullWidth variant='standard' />
+                                <TextField margin='dense' name='inputTags' label='Укажите тэги через запятую' fullWidth variant='standard' />
                             </DialogContent>
                             <DialogActions>
                                 <Button onClick={handleClose}>Отмена</Button>

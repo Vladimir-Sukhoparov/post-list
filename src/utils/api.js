@@ -45,6 +45,56 @@ class Api {
         }).then(onResponce)
     }
 
+    getCommentPost(itemID) {
+        return fetch(`${this._url}/posts/comments/${itemID}`, {
+            headers: {
+                authorization: `Bearer ${this._token}`,
+            },
+        }).then(onResponce)
+    }
+
+    addComments(itemID, comments ) {
+        return fetch(`${this._url}/posts/comments/${itemID}`, {
+            method: 'POST',
+            headers: {
+                authorization: `Bearer ${this._token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(comments),
+        }).then(onResponce)
+    }
+
+    deleteComments(itemID, commentID) {
+        return fetch(`${this._url}/posts/comments/${itemID}/${commentID}`, {
+            method: 'DELETE',
+            headers: {
+                authorization: `Bearer ${this._token}`,
+            },
+        }).then(onResponce)
+    }
+
+    editCurentUser(updatedUserInfo) {
+        return fetch(`${this._url}/users/me`, {
+            method: 'PATCH',
+            headers: {
+                authorization: `Bearer ${this._token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedUserInfo),
+        }).then(onResponce);
+    }
+
+    editAvatarUser(updateAvatar) {
+        return fetch(`${this._url}/users/me/avatar`, {
+            method: 'PATCH',
+            headers: {
+                authorization: `Bearer ${this._token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updateAvatar),
+        }).then(onResponce);
+    }
+
     addPost(posts) {
         return fetch(`${this._url}/posts`, {
             method: 'POST',
