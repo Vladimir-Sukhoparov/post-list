@@ -17,21 +17,20 @@ import DialogTitle from '@mui/material/DialogTitle'
 import TextField from '@mui/material/TextField'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
-import SendIcon from '@mui/icons-material/Send';
-
+import SendIcon from '@mui/icons-material/Send'
 
 import dayjs from 'dayjs'
 
 import style from './index.module.css'
+import { SignalCellularNull } from '@mui/icons-material'
 
-export const Post = ({user}, { changeList }) => {
-    const {setModalState}= useContext (ModalContext)
+export const Post = ({ user }, { changeList }) => {
+    const { setModalState } = useContext(ModalContext)
     const [item, setItem] = useState(null)
     const params = useParams()
     const [comments, setComments] = useState()
-    const [commentID, setCommentID]=useState()
-  
-          
+    const [commentID, setCommentID] = useState()
+
     const [image, setImage] = useState('')
     const [title, setTitle] = useState('')
     const [text, setText] = useState('')
@@ -47,31 +46,32 @@ export const Post = ({user}, { changeList }) => {
                     handleClose
                 }
             })
-            .catch(() => 
-            setModalState(()=>{
-                return {
-                    isOpen: true,
-                    msg: 'Не удалось удалить пост'
-                }
-            }))
+            .catch(() =>
+                setModalState(() => {
+                    return {
+                        isOpen: true,
+                        msg: 'Не удалось удалить пост',
+                    }
+                })
+            )
     }
 
-    
-  
-
-    const handleClickDelCom=()=>{
-       
+    const handleClickDelCom = () => {
         api.deleteComments(params.itemID, commentID)
-        .then((data)=>
-        handleCloseComment())
-        .catch(() => 
-        setModalState(()=>{
-            return {
-                isOpen: true,
-                msg: 'Не удалось удалить комментарий'
-            }
-        }))
-    
+            .then((data) => {
+                setComments((prevState) => {
+                    return prevState.filter((item) => item._id !== commentID)
+                })
+                handleCloseComment()
+            })
+            .catch(() =>
+                setModalState(() => {
+                    return {
+                        isOpen: true,
+                        msg: 'Не удалось удалить комментарий',
+                    }
+                })
+            )
     }
 
     const addUserComments = (event) => {
@@ -79,42 +79,58 @@ export const Post = ({user}, { changeList }) => {
         const {
             target: { inputComments },
         } = event
-       
-        api.addComments(params.itemID,{
-            text: inputComments.value.trim()
+
+        api.addComments(params.itemID, {
+            text: inputComments.value.trim(),
         })
-        .then((data)=>{
-         inputComments.value=''
-        })
-        .catch(()=>
-        setModalState(()=>{
-            return {
-                isOpen: true,
-                msg: 'Не удалось добавить комментарий'
-            }
-        }))
+            .then((data) => {
+                updateComments()
+                inputComments.value = ''
+            })
+            .catch(() =>
+                setModalState(() => {
+                    return {
+                        isOpen: true,
+                        msg: 'Не удалось добавить комментарий',
+                    }
+                })
+            )
+    }
+
+    const updateComments = () => {
+        api.getCommentPost(params.itemID)
+            .then((data) => setComments(data))
+            .catch((err) =>
+                setModalState(() => {
+                    return {
+                        isOpen: true,
+                        msg: err,
+                    }
+                })
+            )
     }
 
     useEffect(() => {
         api.getPost(params.itemID)
             .then((data) => setItem(data))
-            .catch(() => 
-            setModalState(()=>{
-                return {
-                    isOpen: true,
-                    msg: 'Не удалось открыть пост'
-                }
-            }))
+            .catch(() =>
+                setModalState(() => {
+                    return {
+                        isOpen: true,
+                        msg: 'Не удалось открыть пост',
+                    }
+                })
+            )
     }, [])
 
     const [open, setOpen] = useState(false)
     const [openEdit, setOpenEdit] = useState(false)
-    const [openComment, setOpenComment]=useState(false)
+    const [openComment, setOpenComment] = useState(false)
 
     const handleClickOpen = () => {
         setOpen(true)
     }
-    
+
     const handleClose = () => {
         setOpen(false)
     }
@@ -134,7 +150,7 @@ export const Post = ({user}, { changeList }) => {
     const handleCloseComment = () => {
         setOpenComment(false)
     }
-    
+
     const handleClickToEdit = () => {
         api.editPost(params.itemID, {
             image: image,
@@ -146,13 +162,14 @@ export const Post = ({user}, { changeList }) => {
                 setItem(data)
                 handleCloseEdit()
             })
-            .catch(() => 
-            setModalState(()=>{
-                return {
-                    isOpen: true,
-                    msg: 'Не удалось редактировать пост'
-                }
-            }))
+            .catch(() =>
+                setModalState(() => {
+                    return {
+                        isOpen: true,
+                        msg: 'Не удалось редактировать пост',
+                    }
+                })
+            )
     }
 
     useEffect(() => {
@@ -161,32 +178,29 @@ export const Post = ({user}, { changeList }) => {
 
     useEffect(() => {
         api.getCommentPost(params.itemID)
-        .then((data) => setComments(data))
-        .catch((err) => alert(err))
+            .then((data) => setComments(data))
+            .catch((err) =>
+                setModalState(() => {
+                    return {
+                        isOpen: true,
+                        msg: err,
+                    }
+                })
+            )
     }, [])
-    
-    
-    
 
     return (
         <div>
-        <Link to='/'>
-            <Button variant='outlined' sx={{ mb: 1 }}>
-                Назад
-            </Button>
+            <Link to='/'>
+                <Button variant='outlined' sx={{ mb: 1 }}>
+                    Назад
+                </Button>
             </Link>
             <>
                 {item && (
                     <Grid container spacing={2}>
                         <Grid item xs={7}>
-                            <img
-                                style={{
-                                    maxHeight: 500,
-                                    maxWidth: 500,
-                                }}
-                                src={item?.image}
-                                alt='picture'
-                            />
+                            <img src={item?.image} alt='picture' />
                         </Grid>
                         <Grid item container xs={5}>
                             <Grid item xs={12}>
@@ -261,11 +275,10 @@ export const Post = ({user}, { changeList }) => {
 
                                         <DialogActions>
                                             <Button onClick={handleClose}>Отмена</Button>
-                                           
+
                                             <Button onClick={handleClick} href='/'>
                                                 Удалить
                                             </Button>
-                                            
                                         </DialogActions>
                                     </Dialog>
 
@@ -285,10 +298,10 @@ export const Post = ({user}, { changeList }) => {
                                 </ListItem>
                                 <Divider />
                                 <form onSubmit={addUserComments}>
-                                <TextField id='outlined-basic' label='Ваш комментарий' variant='outlined' fullWidth name='inputComments' />
-                                <Button type='submit' variant='outlined'  sx={{ mt: 1, mb:1}} size="small" endIcon={<SendIcon /> } >
-                                    Добавить комментарий
-                                </Button>
+                                    <TextField id='outlined-basic' label='Ваш комментарий' variant='outlined' fullWidth name='inputComments' />
+                                    <Button type='submit' variant='outlined' sx={{ mt: 1, mb: 1 }} size='small' endIcon={<SendIcon />}>
+                                        Добавить комментарий
+                                    </Button>
                                 </form>
                                 <Divider />
                             </Grid>
@@ -304,25 +317,25 @@ export const Post = ({user}, { changeList }) => {
                                         </ListItem>
 
                                         <Typography variant='body1'>{item.text}</Typography>
-                                        {item.author._id == user && <DeleteIcon fontSize='small' 
-                                        onClick={() => {
-                                                     setCommentID(item._id);
+                                        {item.author._id == user && (
+                                            <DeleteIcon
+                                                fontSize='small'
+                                                onClick={() => {
+                                                    setCommentID(item._id)
                                                     handleClickOpenComment()
-                                                    
                                                 }}
-                                         sx={{ ml: 48, cursor: 'pointer' }} />}
+                                                sx={{ ml: 48, cursor: 'pointer' }}
+                                            />
+                                        )}
                                         <Dialog open={openComment} onClose={handleCloseComment} aria-labelledby='alert-dialog-title' aria-describedby='alert-dialog-description'>
-                                        <DialogTitle id='alert-dialog-title'>Вы действительно хотите удалить свой комментарий? </DialogTitle>
+                                            <DialogTitle id='alert-dialog-title'>Вы действительно хотите удалить свой комментарий? </DialogTitle>
 
-                                        <DialogActions>
-                                            <Button onClick={handleCloseComment}>Отмена</Button>
-                                           
-                                            <Button onClick={handleClickDelCom}>
-                                                Удалить
-                                            </Button>
-                                            
-                                        </DialogActions>
-                                    </Dialog>
+                                            <DialogActions>
+                                                <Button onClick={handleCloseComment}>Отмена</Button>
+
+                                                <Button onClick={handleClickDelCom}>Удалить</Button>
+                                            </DialogActions>
+                                        </Dialog>
                                         <Divider />
                                     </List>
                                 ))}
