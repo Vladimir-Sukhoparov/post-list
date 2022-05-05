@@ -22,7 +22,7 @@ import SendIcon from '@mui/icons-material/Send'
 import dayjs from 'dayjs'
 
 import style from './index.module.css'
-import { SignalCellularNull } from '@mui/icons-material'
+
 
 export const Post = ({ user }, { changeList }) => {
     const { setModalState } = useContext(ModalContext)

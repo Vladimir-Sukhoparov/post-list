@@ -18,6 +18,7 @@ import ModalContext from './contexts/modalContext'
 
 import './index.css'
 import AlertModal from './components/Modal'
+import { Search } from './components/Search'
 
 export const App = () => {
     const [postList, setPostList] = useState([])
@@ -55,6 +56,7 @@ export const App = () => {
                 <AlertModal />
                     <Header>
                         <Logo />
+                        <Search setPostList={setPostList}/>
                         <InfoUser />
                         <HeadLinks />
                     </Header>
