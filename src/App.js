@@ -41,8 +41,8 @@ export const App = () => {
         msg: null,
     });
 
+    const token = readLS('token')
     useEffect(()=>{
-        const token = readLS('token')
         if(!token){
             setModalFormState(()=>{
                 return{
@@ -56,16 +56,17 @@ export const App = () => {
     const [user, setUser] = useState(null)
 
     useEffect(() => {
-      
+      if(token){
         api.getPost()
             .then((list) => setPostList(list))
-            .catch((err) => alert(err))
+            .catch((err) => alert(err))}
     }, [user])
 
     useEffect(() => {
+        if(token){
               api.getInfoUser()
             .then((user) => setUser(user))
-            .catch((err) => alert(err))
+            .catch((err) => alert(err))}
 
     }, [])
 
@@ -83,7 +84,7 @@ export const App = () => {
                     <FormModal />
                     <Header>
                         <Logo />
-                        <Search setPostList={setPostList} />
+                        <Search setPostList={setPostList} token={token}/>
                         <InfoUser />
                         <HeadLinks />
                     </Header>

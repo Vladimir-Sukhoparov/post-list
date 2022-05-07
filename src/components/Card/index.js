@@ -21,6 +21,7 @@ import CommentIcon from '@mui/icons-material/Comment'
 import dayjs from 'dayjs'
 
 import style from './index.module.css'
+import { useLocalStorage } from '../../hooks/useLocalStorage'
 
 const divStyle = {
     padding: '13px',
@@ -32,20 +33,9 @@ export const Card = ({ itemPost, isInFavorites, setFavorites }) => {
     const api= useApi()
     const [textLike, setTextLike] = useState(itemPost.likes.length)
     const {setModalState} = useContext(ModalContext)
+    const { writeLS, removeLS } = useLocalStorage()
 
-    const writeLS = (key, value) => {
-        const storage = JSON.parse(localStorage.getItem(key)) || []
-        storage.push(value)
-
-        localStorage.setItem(key, JSON.stringify(storage))
-    }
-
-    const removeLS = (key, value) => {
-        const storage = JSON.parse(localStorage.getItem(key))
-        const filteredStorage = storage.filter((itemID) => value !== itemID)
-        localStorage.setItem(key, JSON.stringify(filteredStorage))
-    }
-
+    
     const addFavorite = () => {
         writeLS('favorites', itemPost._id)
         setFavorites((prevState) => [...prevState, itemPost._id])
