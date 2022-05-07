@@ -13,10 +13,10 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import TextField from '@mui/material/TextField'
-import { useLocalStorage } from '../../hooks/useLocalStorage'
+import FormModalContext from '../../contexts/formModalContext'
 
-export const InfoUser = () => {
-   
+export const InfoUser = ({token}) => {
+    const { modalFormState, setModalFormState } = useContext(FormModalContext)
     const api=useApi()
     const { user, setUser } = useContext(UserContext)
     const {setModalState} = useContext(ModalContext)
@@ -41,7 +41,14 @@ export const InfoUser = () => {
     }
 
     const exitUser =()=>{
-        localStorage.setItem('token', '')
+        localStorage.setItem('token', '');
+        setModalFormState(()=>{
+            return{
+                isOpen: true,
+                msg: 'Вы не авторизированы',
+            }
+        })
+        
     }
 
 
@@ -93,6 +100,7 @@ export const InfoUser = () => {
                         </Button>
                     </DialogActions>
                 </Dialog>
+                
                 <Button variant='contained' size='small' onClick={exitUser}>Выход</Button>
             </Stack>
         </div>

@@ -85,7 +85,7 @@ export const App = () => {
                     <Header>
                         <Logo />
                         <Search setPostList={setPostList} token={token}/>
-                        <InfoUser />
+                        <InfoUser token={token}/>
                         <HeadLinks />
                     </Header>
                     <div className='content container'>

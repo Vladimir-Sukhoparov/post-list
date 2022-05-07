@@ -16,7 +16,7 @@ export const Search = ({ setPostList, token }) => {
 
     return (
         <div className='search'>
-            <input type='text' placeholder='Поиск' className='search__input' onChange={(event) => setSearchText(event.target.value)} />
+            <input type='text' placeholder='Поиск по названию поста' className='search__input' onChange={(event) => setSearchText(event.target.value)} />
         </div>
     )
 }

@@ -73,6 +73,9 @@ export const FormModal = () => {
             <Box sx={style}>
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
+                    <Typography  variant='h5' component='h1'>
+                            Вы не авторизированы
+                        </Typography>
                         <Typography id='modal-modal-title' variant='h6' component='h2'>
                             Введите ваши данные
                         </Typography>
