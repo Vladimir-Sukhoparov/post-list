@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import './index.css'
-import api from '../../utils/api'
+import { useApi } from '../../hooks/useApi'
 
 export const Search = ({ setPostList }) => {
+    const api = useApi()
     const [searchText, setSearchText] = useState('')
 
     useEffect(() => {

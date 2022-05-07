@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import api from '../../utils/api'
+import { useApi } from '../../hooks/useApi'
 import ModalContext from '../../contexts/modalContext'
 
 import Grid from '@mui/material/Grid'
@@ -25,6 +25,7 @@ import style from './index.module.css'
 
 
 export const Post = ({ user }, { changeList }) => {
+    const api = useApi()
     const { setModalState } = useContext(ModalContext)
     const [item, setItem] = useState(null)
     const params = useParams()
@@ -228,6 +229,7 @@ export const Post = ({ user }, { changeList }) => {
                                                     setImage(target.value)
                                                 }}
                                             />
+                                            
                                             <TextField
                                                 margin='dense'
                                                 name='inputTitle'

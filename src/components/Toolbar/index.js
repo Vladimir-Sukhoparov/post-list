@@ -8,7 +8,7 @@ import { emphasize, styled } from '@mui/material/styles'
 import Chip from '@mui/material/Chip'
 import Typography from '@mui/material/Typography'
 import style from './index.module.css'
-import api from '../../utils/api'
+import { useApi } from '../../hooks/useApi'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
@@ -18,6 +18,7 @@ import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
+
     const backgroundColor = theme.palette.mode === 'light' ? theme.palette.grey[100] : theme.palette.grey[800]
 
     return {
@@ -38,8 +39,9 @@ const BootstrapButton = styled(Button)({
     textTransform: 'none',
 })
 
-export const Toolbar = ({changeList}) => {
-    const {setModalState} = useContext(ModalContext)
+export const Toolbar = ({ changeList }) => {
+    const api = useApi()
+    const { setModalState } = useContext(ModalContext)
     const [open, setOpen] = useState(false)
 
     const handleClickOpen = () => {
@@ -55,32 +57,38 @@ export const Toolbar = ({changeList}) => {
         const {
             target: { inputImage, inputTitle, inputText, inputTags },
         } = event
-        if(inputImage.value.length!==0 && inputTitle.value.length!==0 && inputText.value.length!==0 && inputTags.value.length!==0){
-        api.addPost({
-            image: inputImage.value.trim(),
-            title: inputTitle.value.trim(),
-            text: inputText.value.trim(),
-            tags: inputTags.value.trim().split(','),
-        })
-            .then((data) => {
-                changeList((prevState)=>[...prevState, data])
-                {
-                    handleClose
-                }
+
+        if (inputImage.value.length !== 0 && inputTitle.value.length !== 0 && inputText.value.length !== 0 && inputTags.value.length !== 0) {
+            api.addPost({
+                image: inputImage.value.trim(),
+                title: inputTitle.value.trim(),
+                text: inputText.value.trim(),
+                tags: inputTags.value.trim().split(','),
             })
-            .catch(() => 
-            setModalState(()=>{
+                .then((data) => {
+                    changeList((prevState) => [...prevState, data])
+                    {
+                        handleClose
+                    }
+                })
+                .catch(() =>
+                    setModalState(() => {
+                        return {
+                            isOpen: true,
+                            msg: 'Не удалось добавить пост',
+                        }
+                    })
+                )
+        } else {
+            setModalState(() => {
                 return {
                     isOpen: true,
-                    msg: 'Не удалось добавить пост'
+                    msg: 'Заполните все поля',
                 }
-            }))
-    } else {setModalState(()=>{
-        return {
-            isOpen: true,
-            msg: 'Заполните все поля'
+            })
+            handleClickOpen()
         }
-    }); handleClickOpen()}}
+    }
     return (
         <div className={style.toolbar}>
             <Breadcrumbs aria-label='breadcrumb'>

@@ -125,6 +125,26 @@ class Api {
             },
         }).then(onResponce)
     }
+
+    signUp(userData) {
+        return fetch(`${this._url}/signup`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData),
+        }).then(onResponce);
+    }
+
+    signIn(userData) {
+        return fetch(`${this._url}/signin`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData),
+        }).then(onResponce);
+    }
 }
 
-export default new Api(config)
+export default Api

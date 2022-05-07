@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import UserContext from '../../contexts/userContext'
-import api from '../../utils/api'
+import { useApi } from '../../hooks/useApi'
 import ModalContext from '../../contexts/modalContext'
 
 import Avatar from '@mui/material/Avatar'
@@ -13,8 +13,11 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import TextField from '@mui/material/TextField'
+import { useLocalStorage } from '../../hooks/useLocalStorage'
 
 export const InfoUser = () => {
+   
+    const api=useApi()
     const { user, setUser } = useContext(UserContext)
     const {setModalState} = useContext(ModalContext)
     const [userName, setUserName] = useState('')
@@ -36,6 +39,11 @@ export const InfoUser = () => {
     const handleClose = () => {
         setOpen(false)
     }
+
+    const exitUser =()=>{
+        localStorage.setItem('token', '')
+    }
+
 
     const handleClick =()=>{
         api.editCurentUser({name:userName,
@@ -85,6 +93,7 @@ export const InfoUser = () => {
                         </Button>
                     </DialogActions>
                 </Dialog>
+                <Button variant='contained' size='small' onClick={exitUser}>Выход</Button>
             </Stack>
         </div>
     )

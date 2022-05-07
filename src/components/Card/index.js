@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import ModalContext from '../../contexts/modalContext'
 
-import api from '../../utils/api'
+import { useApi } from '../../hooks/useApi'
 
 import { Card as CardMUI } from '@mui/material'
 import { Typography } from '@mui/material'
@@ -29,6 +29,7 @@ const divStyle = {
 }
 
 export const Card = ({ itemPost, isInFavorites, setFavorites }) => {
+    const api= useApi()
     const [textLike, setTextLike] = useState(itemPost.likes.length)
     const {setModalState} = useContext(ModalContext)
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
 
-import api from './utils/api'
+import { useApi } from './hooks/useApi'
 import { Header } from './components/Header'
 import { Footer } from './components/Footer'
 import { List } from './components/List'
@@ -15,33 +15,58 @@ import { Post } from './components/Post'
 
 import UserContext from './contexts/userContext'
 import ModalContext from './contexts/modalContext'
+import FormModalContext from './contexts/formModalContext';
 
 import './index.css'
 import AlertModal from './components/Modal'
 import { Search } from './components/Search'
+import { useLocalStorage } from './hooks/useLocalStorage'
+import { FormModal } from './components/FormModal'
 
 export const App = () => {
+    const api=useApi()
     const [postList, setPostList] = useState([])
+    const { readLS } = useLocalStorage()
     const [currentPage, setCurrentPage] = useState(1)
     const [postsPerPage] = useState(12)
-    const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem('favorites')) || [])
+    const [favorites, setFavorites] = useState(readLS('favorites') || [])
+
     const [modalState, setModalState] = useState({
         isOpen: false,
-        msg: null
+        msg: null,
     })
+
+    const [modalFormState, setModalFormState] = useState({
+        isOpen: false,
+        msg: null,
+    });
+
+    useEffect(()=>{
+        const token = readLS('token')
+        if(!token){
+            setModalFormState(()=>{
+                return{
+                    isOpen: true,
+                    msg: 'Вы не авторизированы',
+                }
+            })
+        }
+    },[])
 
     const [user, setUser] = useState(null)
 
     useEffect(() => {
+      
         api.getPost()
             .then((list) => setPostList(list))
             .catch((err) => alert(err))
-    }, [])
+    }, [user])
 
     useEffect(() => {
-        api.getInfoUser()
+              api.getInfoUser()
             .then((user) => setUser(user))
             .catch((err) => alert(err))
+
     }, [])
 
     const indexOfLastPosts = currentPage * postsPerPage
@@ -52,11 +77,13 @@ export const App = () => {
     return (
         <UserContext.Provider value={{ user, setUser }}>
             <ModalContext.Provider value={{ modalState, setModalState }}>
+            <FormModalContext.Provider value={{ modalFormState, setModalFormState }}>
                 <div className='appContainer'>
-                <AlertModal />
+                    <AlertModal />
+                    <FormModal />
                     <Header>
                         <Logo />
-                        <Search setPostList={setPostList}/>
+                        <Search setPostList={setPostList} />
                         <InfoUser />
                         <HeadLinks />
                     </Header>
@@ -79,13 +106,13 @@ export const App = () => {
 
                             <Route path='posts/:itemID' element={<Post user={user?._id} changeList={setPostList} />} />
 
-                            
                             <Route path='about' element={<div>Page About</div>} />
                         </Routes>
                     </div>
 
                     <Footer />
                 </div>
+                </FormModalContext.Provider>
             </ModalContext.Provider>
         </UserContext.Provider>
     )
